@@ -39,19 +39,32 @@
 
 #### ⚠️ Attivazione dei tasti rapidi (Android 13 / 14 / 15)
 Per permettere ai tasti **Volume Su** e **Volume Giù** di funzionare anche fuori dall'app, è necessario abilitare il servizio di accessibilità:
-
 1. Apri **BlackEye** e concedi i permessi per **Fotocamera** e **Microfono**.
 2. Tocca il pulsante **ATTIVA TASTI RAPIDI IN ACCESSIBILITÀ** nella parte inferiore della schermata.
 3. Nella lista *App scaricate*, tocca **BlackEye - Tasti Rapidi Fotocamera**.
 4. *Nota per Android 13 e versioni successive:* se l'opzione risulta disattivata con l'avviso *"Impostazione con restrizioni"*:
    * Tocca la voce disattivata e premi **Chiudi** sull'avviso.
+   * <img width="675" height="465" alt="image" src="https://github.com/user-attachments/assets/075dbca4-9429-409d-9149-9ae6f801c21f" />
+   * <img width="615" height="780" alt="image" src="https://github.com/user-attachments/assets/e2c1f232-6d29-46fa-a902-07b299d6bdb6" />
+
    * Vai nelle **Impostazioni di sistema → App → BlackEye** (Informazioni app).
+   * <img width="465" height="465" alt="image" src="https://github.com/user-attachments/assets/d04d6565-9eb9-4c42-8e98-08932dacd004" />
+
    * Tocca i **tre puntini (`⋮`)** in alto a destra (o scorri in fondo alla pagina) e seleziona **Consenti impostazioni con restrizioni**, confermando con PIN o impronta digitale.
+   * <img width="675" height="672" alt="image" src="https://github.com/user-attachments/assets/6e9e0731-1d94-42e9-873d-0788976a74ee" />
+   * <img width="675" height="484" alt="image" src="https://github.com/user-attachments/assets/29c6badf-6de8-44e1-bcd2-58ed9ff8a64e" />
+
+
    * Torna in **Impostazioni → Accessibilità → BlackEye - Tasti Rapidi Fotocamera** e attiva l'interruttore.
+   * <img width="675" height="1185" alt="image" src="https://github.com/user-attachments/assets/db658759-1367-45c8-9fc0-6ba46a0a9ec5" />
+   * <img width="675" height="480" alt="image" src="https://github.com/user-attachments/assets/dd8f6cd1-1dc6-45a3-a16d-f7f7e75029df" />
 
 ---
 
 ### 📱 Come si usa
+
+<img width="675" height="1177" alt="image" src="https://github.com/user-attachments/assets/34aaa37d-d448-463c-8498-fe09be330d10" />
+
 
 1. **Imposta le fotocamere:**
    * Nella sezione **VIDEO (TASTO VOLUME GIÙ)** scegli **Anteriore** o **Posteriore**.
