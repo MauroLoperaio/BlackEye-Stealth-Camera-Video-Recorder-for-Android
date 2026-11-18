@@ -47,7 +47,7 @@ Per permettere ai tasti **Volume Su** e **Volume Giù** di funzionare anche fuor
    * <img width="675" height="465" alt="image" src="https://github.com/user-attachments/assets/075dbca4-9429-409d-9149-9ae6f801c21f" />
    * <img width="615" height="780" alt="image" src="https://github.com/user-attachments/assets/e2c1f232-6d29-46fa-a902-07b299d6bdb6" />
 
-   * Vai nella **Schermata Home nel quale si trova la app e tenendo premuto su di esso, clicca su: Informazioni App** 
+   * Vai nella **Schermata Home nel quale si trova l?app e tenendo premuto su di essa, clicca su: Informazioni App** 
    * <img width="465" height="465" alt="image" src="https://github.com/user-attachments/assets/d04d6565-9eb9-4c42-8e98-08932dacd004" />
 
    * Tocca i **tre puntini (`⋮`)** in alto a destra (o scorri in fondo alla pagina) e seleziona **Consenti impostazioni con restrizioni**, confermando con PIN o impronta digitale.
