@@ -148,7 +148,6 @@ class MainActivity : AppCompatActivity() {
             // Se è già attivo, lo fermiamo completamente
             stopService(Intent(this, CameraService::class.java))
             tvStatus.text = "Servizio in background fermato."
-            Toast.sleep(100) // opzionale
             updateButtonState()
         } else {
             // Se è spento, lo avviamo
@@ -171,10 +170,10 @@ class MainActivity : AppCompatActivity() {
     private fun updateButtonState() {
         if (CameraService.isRunning) {
             btnStartAction.text = "FERMA SERVIZIO IN BACKGROUND"
-            btnStartAction.setBackgroundColor(Color.parseColor("#37474F")) // Grigio scuro / neutro
+            btnStartAction.setBackgroundColor(Color.parseColor("#37474F")) // Grigio scuro
         } else {
             btnStartAction.text = "AVVIA ACQUISIZIONE"
-            btnStartAction.setBackgroundColor(Color.parseColor("#E53935")) // Rosso BlackEye
+            btnStartAction.setBackgroundColor(Color.parseColor("#E53935")) // Rosso principale
         }
     }
 
