@@ -52,14 +52,12 @@ jobs:
           yes | /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses || true
           /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager "platforms;android-34" "build-tools;34.0.0"
 
-      - name: Prepara Gradle Wrapper e converte fine riga Unix
+      - name: Prepara Gradle Wrapper e file base
         working-directory: ${{ steps.detect.outputs.dir }}
         run: |
           mkdir -p gradle/wrapper
           curl -fL "https://github.com/gradle/gradle/raw/v8.6.0/gradle/wrapper/gradle-wrapper.jar" -o gradle/wrapper/gradle-wrapper.jar
-          if [ ! -s "gradlew" ]; then
-            curl -fLo gradlew "https://raw.githubusercontent.com/gradle/gradle/v8.6.0/gradlew"
-          fi
+          curl -fL "https://raw.githubusercontent.com/gradle/gradle/v8.6.0/gradlew" -o gradlew
           sed -i 's/\r$//' gradlew
           chmod +x gradlew
 
@@ -83,11 +81,13 @@ jobs:
           kotlin.code.style=official
           android.nonTransitiveRClass=true
           EOF
+          else
+            sed -i 's/\r$//' gradle.properties
           fi
 
       - name: Compila APK
         working-directory: ${{ steps.detect.outputs.dir }}
-        run: ./gradlew assembleDebug --no-daemon --stacktrace
+        run: java -Dorg.gradle.appname=gradlew -classpath gradle/wrapper/gradle-wrapper.jar org.gradle.wrapper.GradleWrapperMain assembleDebug --no-daemon --stacktrace
 
       - name: Pubblica APK
         uses: actions/upload-artifact@v4
