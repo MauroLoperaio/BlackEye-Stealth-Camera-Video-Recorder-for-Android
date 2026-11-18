@@ -135,7 +135,7 @@ class CameraService : LifecycleService() {
                         override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                             vibrate(doublePulse = false)
                             provider.unbindAll()
-                            broadcastState("Foto salvata in DCIM/StealthCam")
+                            broadcastState("Foto salvata (${if (useFrontCamera) "Frontale" else "Posteriore"})")
                         }
 
                         override fun onError(exception: ImageCaptureException) {
@@ -177,7 +177,7 @@ class CameraService : LifecycleService() {
                 provider.unbindAll()
                 provider.bindToLifecycle(this, selector, videoCapture)
                 isRecording = true
-                broadcastState("Registrazione video in corso...")
+                broadcastState("Registrazione video in corso (${if (useFrontCamera) "Frontale" else "Posteriore"})...")
 
                 val ts = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
                 val prefix = if (useFrontCamera) "BE_VID_FRONT_" else "BE_VID_BACK_"
@@ -235,7 +235,7 @@ class CameraService : LifecycleService() {
         }
         recording = null
         isRecording = false
-        broadcastState("Registrazione video interrotta e salvata")
+        broadcastState("Salvataggio video completato")
     }
 
     private fun broadcastState(message: String) {
@@ -262,8 +262,8 @@ class CameraService : LifecycleService() {
         }
         return NotificationCompat.Builder(this, channelId)
             .setSmallIcon(android.R.drawable.ic_menu_camera)
-            .setContentTitle("BlackEye attivo in background")
-            .setContentText("Tasti volume pronti all'uso")
+            .setContentTitle("BlackEye attivo")
+            .setContentText("Pronto per acquisizione rapida")
             .setPriority(NotificationCompat.PRIORITY_MIN)
             .setSilent(true)
             .build()
