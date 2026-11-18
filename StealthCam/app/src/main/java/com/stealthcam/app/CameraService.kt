@@ -40,7 +40,6 @@ class CameraService : LifecycleService() {
         createInvisibleOverlay()
     }
 
-    // ── Overlay 1×1 pixel trasparente che cattura i tasti volume ──────────
     private fun createInvisibleOverlay() {
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
 
@@ -58,7 +57,8 @@ class CameraService : LifecycleService() {
 
         val type = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-        else @Suppress("DEPRECATION") WindowManager.LayoutParams.TYPE_PHONE
+        else
+            @Suppress("DEPRECATION") WindowManager.LayoutParams.TYPE_PHONE
 
         val params = WindowManager.LayoutParams(
             1, 1, type,
@@ -75,7 +75,7 @@ class CameraService : LifecycleService() {
         } catch (_: Exception) {}
     }
 
-    // ── FOTO — fotocamera FRONTALE ─────────────────────────────────────────
+    // FOTO — fotocamera FRONTALE
     private fun takePhoto() {
         val future = ProcessCameraProvider.getInstance(this)
         future.addListener({
@@ -101,21 +101,28 @@ class CameraService : LifecycleService() {
                     ).build(),
                     ContextCompat.getMainExecutor(this),
                     object : ImageCapture.OnImageSavedCallback {
-                        override fun onImageSaved(o: ImageCapture.OutputFileResults) { vibrate(); provider.unbindAll() }
-                        override fun onError(e: ImageCaptureException) { provider.unbindAll() }
+                        override fun onImageSaved(o: ImageCapture.OutputFileResults) {
+                            vibrate()
+                            provider.unbindAll()
+                        }
+                        override fun onError(e: ImageCaptureException) {
+                            provider.unbindAll()
+                        }
                     }
                 )
             } catch (e: Exception) { provider.unbindAll() }
         }, ContextCompat.getMainExecutor(this))
     }
 
-    // ── VIDEO — fotocamera POSTERIORE ──────────────────────────────────────
+    // VIDEO — fotocamera POSTERIORE
     private fun startVideo() {
         val future = ProcessCameraProvider.getInstance(this)
         future.addListener({
             val provider = future.get()
             val vc = VideoCapture.withOutput(
-                Recorder.Builder().setQualitySelector(QualitySelector.from(Quality.HIGHEST)).build()
+                Recorder.Builder()
+                    .setQualitySelector(QualitySelector.from(Quality.HIGHEST))
+                    .build()
             )
             try {
                 provider.unbindAll()
@@ -132,13 +139,19 @@ class CameraService : LifecycleService() {
 
                 recording = vc.output
                     .prepareRecording(this,
-                        MediaStoreOutputOptions.Builder(contentResolver, MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
-                            .setContentValues(cv).build())
+                        MediaStoreOutputOptions.Builder(
+                            contentResolver, MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+                        ).setContentValues(cv).build()
+                    )
                     .withAudioEnabled()
                     .start(ContextCompat.getMainExecutor(this), Consumer { event ->
                         when (event) {
                             is VideoRecordEvent.Start    -> vibrate()
-                            is VideoRecordEvent.Finalize -> { isRecording = false; vibrate(); provider.unbindAll() }
+                            is VideoRecordEvent.Finalize -> {
+                                isRecording = false
+                                vibrate()
+                                provider.unbindAll()
+                            }
                         }
                     })
             } catch (e: Exception) { isRecording = false; provider.unbindAll() }
@@ -147,12 +160,12 @@ class CameraService : LifecycleService() {
 
     private fun stopVideo() { recording?.stop(); recording = null }
 
-    // ── Notifica minima (obbligatoria per il servizio in foreground) ───────
     private fun buildNotification(): Notification {
         val ch = "sc_bg"
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(ch, "SC", NotificationManager.IMPORTANCE_MIN).apply {
-                setShowBadge(false); setSound(null, null)
+                setShowBadge(false)
+                setSound(null, null)
             }
             getSystemService(NotificationManager::class.java)?.createNotificationChannel(channel)
         }
@@ -160,7 +173,8 @@ class CameraService : LifecycleService() {
             .setSmallIcon(android.R.drawable.ic_menu_camera)
             .setContentTitle(" ").setContentText(" ")
             .setPriority(NotificationCompat.PRIORITY_MIN)
-            .setSilent(true).build()
+            .setSilent(true)
+            .build()
     }
 
     private fun vibrate() {
@@ -172,14 +186,15 @@ class CameraService : LifecycleService() {
             getSystemService(Vibrator::class.java)?.let { v ->
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                     v.vibrate(VibrationEffect.createOneShot(80, VibrationEffect.DEFAULT_AMPLITUDE))
-                else @Suppress("DEPRECATION") v.vibrate(80)
+                else
+                    @Suppress("DEPRECATION") v.vibrate(80)
             }
         }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        return START_STICKY // Si riavvia automaticamente se il sistema lo chiude
+        return START_STICKY
     }
 
     override fun onDestroy() {
