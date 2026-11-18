@@ -5,13 +5,10 @@ on:
     branches: [ main, master ]
   workflow_dispatch:
 
-defaults:
-  run:
-    working-directory: StealthCam
-
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -21,23 +18,30 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Configura Android SDK (pre-installato)
+        run: |
+          echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> $GITHUB_ENV
+          echo "PATH=/usr/local/lib/android/sdk/cmdline-tools/latest/bin:/usr/local/lib/android/sdk/platform-tools:$PATH" >> $GITHUB_ENV
+
+      - name: Installa componenti SDK 34
+        run: |
+          yes | /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses || true
+          /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager "platforms;android-34" "build-tools;34.0.0"
+
       - name: Scarica Gradle Wrapper JAR
+        working-directory: StealthCam
         run: |
           mkdir -p gradle/wrapper
           curl -fL "https://github.com/gradle/gradle/raw/v8.6.0/gradle/wrapper/gradle-wrapper.jar" -o gradle/wrapper/gradle-wrapper.jar
 
       - name: Scarica gradlew ufficiale
-        run: curl -fLo gradlew "https://raw.githubusercontent.com/gradle/gradle/v8.6.0/gradlew" && chmod +x gradlew
-
-      - name: Configura Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Accetta licenze e installa SDK 34
+        working-directory: StealthCam
         run: |
-          yes | sdkmanager --licenses || true
-          sdkmanager "platforms;android-34" "build-tools;34.0.0"
+          curl -fLo gradlew "https://raw.githubusercontent.com/gradle/gradle/v8.6.0/gradlew"
+          chmod +x gradlew
 
       - name: Compila APK
+        working-directory: StealthCam
         run: ./gradlew assembleDebug --no-daemon --stacktrace
 
       - name: Pubblica APK
