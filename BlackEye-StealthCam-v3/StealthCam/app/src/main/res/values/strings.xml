@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">BlackEye</string>
+    <string name="accessibility_service_label">BlackEye - Tasti Rapidi Fotocamera</string>
+    <string name="accessibility_service_description">Permette di scattare una foto frontale con Volume Su (o Freccia Su) e avviare/fermare un video posteriore con Volume Giù dalla Home o in qualsiasi app.</string>
+</resources>

@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0D0D0F"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <!-- Intestazione -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="BlackEye"
+            android:textColor="#FFFFFF"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="20dp"
+            android:text="Controllo acquisizione rapida e modalità schermo nero"
+            android:textColor="#9E9EA7"
+            android:textSize="14sp" />
+
+        <!-- Card 1: Tipo di acquisizione (Foto / Video) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#18181C"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:layout_marginBottom="14dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1. COSA VUOI FARE"
+                android:textColor="#9E9EA7"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="10dp" />
+
+            <RadioGroup
+                android:id="@+id/rgCaptureType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/rbPhoto"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checked="true"
+                    android:text="Scatta Foto"
+                    android:textColor="#FFFFFF"
+                    android:buttonTint="#E53935" />
+
+                <RadioButton
+                    android:id="@+id/rbVideo"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Registra Video"
+                    android:textColor="#FFFFFF"
+                    android:buttonTint="#E53935" />
+            </RadioGroup>
+        </LinearLayout>
+
+        <!-- Card 2: Scelta Fotocamera -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#18181C"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:layout_marginBottom="14dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2. FOTOCAMERA"
+                android:textColor="#9E9EA7"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="10dp" />
+
+            <RadioGroup
+                android:id="@+id/rgCameraLens"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/rbFrontCamera"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checked="true"
+                    android:text="Frontale (Selfie)"
+                    android:textColor="#FFFFFF"
+                    android:buttonTint="#26A69A" />
+
+                <RadioButton
+                    android:id="@+id/rbBackCamera"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Posteriore (Retro)"
+                    android:textColor="#FFFFFF"
+                    android:buttonTint="#26A69A" />
+            </RadioGroup>
+        </LinearLayout>
+
+        <!-- Card 3: Modalità Stealth (Schermo Acceso / Schermo Spento) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#18181C"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:layout_marginBottom="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3. MODALITÀ STEALTH (SCHERMO)"
+                android:textColor="#9E9EA7"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="10dp" />
+
+            <RadioGroup
+                android:id="@+id/rgScreenMode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RadioButton
+                    android:id="@+id/rbScreenOn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="Schermo Acceso (Mostra stato e controlli)"
+                    android:textColor="#FFFFFF"
+                    android:buttonTint="#E53935" />
+
+                <RadioButton
+                    android:id="@+id/rbScreenOff"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Schermo Spento (Simula schermo nero spento)"
+                    android:textColor="#FFFFFF"
+                    android:buttonTint="#E53935" />
+            </RadioGroup>
+        </LinearLayout>
+
+        <!-- Pulsante Avvia -->
+        <Button
+            android:id="@+id/btnStartAction"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:backgroundTint="#E53935"
+            android:text="AVVIA ACQUISIZIONE"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <!-- Pulsante Ferma Video (visibile durante registrazione a schermo acceso) -->
+        <Button
+            android:id="@+id/btnStopVideo"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="10dp"
+            android:backgroundTint="#37474F"
+            android:text="FERMA REGISTRAZIONE VIDEO"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center"
+            android:text="Pronto. File salvati in DCIM/StealthCam"
+            android:textColor="#26A69A"
+            android:textSize="13sp" />
+
+        <!-- Sezione Tasti Rapidi Globali -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:background="#18181C"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TASTI RAPIDI OVUNQUE (HOME E ALTRE APP)"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="• Volume Su / Freccia Su → Foto Fotocamera Frontale
+• Volume Giù → Avvia / Ferma Video Posteriore"
+                android:textColor="#B0B0B8"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/tvAccessibilityStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Stato servizio tasti rapidi: NON ATTIVO"
+                android:textColor="#FF7043"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btnEnableAccessibility"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_marginTop="10dp"
+                android:backgroundTint="#26A69A"
+                android:text="ATTIVA TASTI RAPIDI IN ACCESSIBILITÀ"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

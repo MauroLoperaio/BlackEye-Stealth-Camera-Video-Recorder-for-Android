@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+# Gradle wrapper script per Linux/Mac (non usato su Windows ma incluso per completezza)
+APP_NAME="Gradle"
+APP_BASE_NAME=`basename "$0"`
+DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
+GRADLE_OPTS="$GRADLE_OPTS \"-Dorg.gradle.appname=$APP_BASE_NAME\""
+
+set_gradle_home() {
+    APP_HOME="`pwd -P`"
+}
+
+exec "$JAVACMD" $DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS \
+    "-Dorg.gradle.appname=$APP_BASE_NAME" \
+    -classpath "$APP_HOME/gradle/wrapper/gradle-wrapper.jar" \
+    org.gradle.wrapper.GradleWrapperMain \
+    "$@"
