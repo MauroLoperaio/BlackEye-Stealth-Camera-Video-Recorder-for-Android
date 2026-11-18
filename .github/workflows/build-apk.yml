@@ -38,7 +38,7 @@ jobs:
           yes | /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses || true
           /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager "platforms;android-34" "build-tools;34.0.0"
 
-      - name: Scarica Gradle Wrapper JAR
+      - name: Prepara Gradle Wrapper e proprietà
         working-directory: ${{ steps.detect.outputs.dir }}
         run: |
           mkdir -p gradle/wrapper
@@ -47,6 +47,26 @@ jobs:
             curl -fLo gradlew "https://raw.githubusercontent.com/gradle/gradle/v8.6.0/gradlew"
           fi
           chmod +x gradlew
+
+          if [ ! -f "gradle/wrapper/gradle-wrapper.properties" ]; then
+            cat << 'EOF' > gradle/wrapper/gradle-wrapper.properties
+          distributionBase=GRADLE_USER_HOME
+          distributionPath=wrapper/dists
+          distributionUrl=https\://services.gradle.org/distributions/gradle-8.6-bin.zip
+          networkTimeout=10000
+          zipStoreBase=GRADLE_USER_HOME
+          zipStorePath=wrapper/dists
+          EOF
+          fi
+
+          if [ ! -f "gradle.properties" ]; then
+            cat << 'EOF' > gradle.properties
+          org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+          android.useAndroidX=true
+          kotlin.code.style=official
+          android.nonTransitiveRClass=true
+          EOF
+          fi
 
       - name: Compila APK
         working-directory: ${{ steps.detect.outputs.dir }}
