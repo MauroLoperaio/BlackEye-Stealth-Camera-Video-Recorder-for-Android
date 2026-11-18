@@ -11,6 +11,7 @@
         android:orientation="vertical"
         android:padding="20dp">
 
+        <!-- Intestazione -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -28,7 +29,7 @@
             android:textColor="#9E9EA7"
             android:textSize="14sp" />
 
-        <!-- SEZIONE 1: VIDEO (Volume Giù) -->
+        <!-- Card 1: Fotocamera Video (Volume Giù) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -42,7 +43,7 @@
                 android:layout_height="wrap_content"
                 android:text="VIDEO (TASTO VOLUME GIÙ)"
                 android:textColor="#E53935"
-                android:textSize="13sp"
+                android:textSize="12sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -81,7 +82,7 @@
             </RadioGroup>
         </LinearLayout>
 
-        <!-- SEZIONE 2: FOTO (Volume Su) -->
+        <!-- Card 2: Fotocamera Foto (Volume Su) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -95,7 +96,7 @@
                 android:layout_height="wrap_content"
                 android:text="FOTO (TASTO VOLUME SU)"
                 android:textColor="#26A69A"
-                android:textSize="13sp"
+                android:textSize="12sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -119,7 +120,6 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:buttonTint="#26A69A"
-                    android:checked="true"
                     android:text="Anteriore"
                     android:textColor="#FFFFFF" />
 
@@ -129,12 +129,13 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:buttonTint="#26A69A"
+                    android:checked="true"
                     android:text="Posteriore"
                     android:textColor="#FFFFFF" />
             </RadioGroup>
         </LinearLayout>
 
-        <!-- SEZIONE 3: MODALITÀ SCHERMO -->
+        <!-- Card 3: Modalità Schermo -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -149,7 +150,7 @@
                 android:layout_marginBottom="10dp"
                 android:text="MODALITÀ SCHERMO"
                 android:textColor="#9E9EA7"
-                android:textSize="13sp"
+                android:textSize="12sp"
                 android:textStyle="bold" />
 
             <RadioGroup
@@ -178,7 +179,7 @@
             </RadioGroup>
         </LinearLayout>
 
-        <!-- Pulsante Principale -->
+        <!-- Pulsante Principale Toggle (Attiva / Disattiva) -->
         <Button
             android:id="@+id/btnMainAction"
             android:layout_width="match_parent"
@@ -186,14 +187,24 @@
             android:backgroundTint="#E53935"
             android:text="ATTIVA IN BACKGROUND (ESCI DALL'APP)"
             android:textColor="#FFFFFF"
-            android:textSize="15sp"
+            android:textSize="14sp"
             android:textStyle="bold" />
 
-        <!-- Stato Servizio Accessibilità -->
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="Servizio in background: INATTIVO"
+            android:textColor="#9E9EA7"
+            android:textSize="13sp" />
+
+        <!-- Sezione Tasti Rapidi Globali -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="20dp"
             android:background="#18181C"
             android:orientation="vertical"
             android:padding="16dp">
@@ -210,10 +221,10 @@
             <Button
                 android:id="@+id/btnEnableAccessibility"
                 android:layout_width="match_parent"
-                android:layout_height="46dp"
+                android:layout_height="48dp"
                 android:layout_marginTop="10dp"
                 android:backgroundTint="#26A69A"
-                android:text="IMPOSTAZIONI ACCESSIBILITÀ"
+                android:text="ATTIVA TASTI RAPIDI IN ACCESSIBILITÀ"
                 android:textColor="#FFFFFF"
                 android:textSize="13sp"
                 android:textStyle="bold" />
