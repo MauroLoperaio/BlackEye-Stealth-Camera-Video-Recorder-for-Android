@@ -5,15 +5,13 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.ContentValues
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.Environment
 import android.os.IBinder
-import android.os.VibrationEffect
-import android.os.Vibrator
-import android.os.VibratorManager
 import android.provider.MediaStore
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
@@ -45,15 +43,25 @@ class CameraService : LifecycleService() {
     }
 
     private fun promoteToForeground() {
-        val notification = buildNotification()
+        val notification = buildSilentMinimalNotification()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val hasCamera = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
-            val hasMic = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+            val hasCamera = ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED
+            val hasMic = ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.RECORD_AUDIO
+            ) == PackageManager.PERMISSION_GRANTED
+
             val serviceType = when {
-                hasCamera && hasMic -> ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA or ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE
-                hasCamera -> ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA
+                hasCamera && hasMic ->
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA or ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE
+                hasCamera ->
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA
                 else -> 0
             }
+
             if (serviceType != 0) {
                 startForeground(NOTIF_ID, notification, serviceType)
             } else {
@@ -68,34 +76,41 @@ class CameraService : LifecycleService() {
         super.onStartCommand(intent, flags, startId)
         promoteToForeground()
 
-        val action = intent?.action
-        val useFront = intent?.getBooleanExtra(EXTRA_USE_FRONT_CAMERA, true) ?: true
-
-        when (action) {
-            ACTION_TAKE_PHOTO -> takePhoto(useFront)
+        when (intent?.action) {
+            ACTION_TAKE_PHOTO -> takePhoto()
             ACTION_START_VIDEO -> {
-                if (!isRecording) startVideo(useFront)
+                if (!isRecording) startVideo()
             }
             ACTION_STOP_VIDEO -> {
                 if (isRecording) stopVideo()
             }
             ACTION_TOGGLE_VIDEO -> {
-                if (isRecording) stopVideo() else startVideo(useFront)
+                if (isRecording) stopVideo() else startVideo()
             }
         }
         return START_STICKY
     }
 
-    private fun takePhoto(useFrontCamera: Boolean) {
+    private fun isPhotoFrontSelected(): Boolean {
+        val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        return prefs.getBoolean(PREF_PHOTO_FRONT, true)
+    }
+
+    private fun isVideoFrontSelected(): Boolean {
+        val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        return prefs.getBoolean(PREF_VIDEO_FRONT, false)
+    }
+
+    private fun takePhoto() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             return
         }
-        // Se sta registrando un video, non interrompiamo il video in corso; segnaliamo con doppia vibrazione
+        // Nessuna interruzione né segnalazione se un video è già in corso
         if (isRecording) {
-            vibrate(doublePulse = true)
             return
         }
 
+        val useFrontCamera = isPhotoFrontSelected()
         val future = ProcessCameraProvider.getInstance(this)
         future.addListener({
             val provider = future.get()
@@ -132,28 +147,26 @@ class CameraService : LifecycleService() {
                     ContextCompat.getMainExecutor(this),
                     object : ImageCapture.OnImageSavedCallback {
                         override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                            vibrate(doublePulse = false)
                             provider.unbindAll()
-                            broadcastState("Foto salvata (${if (useFrontCamera) "Frontale" else "Posteriore"})")
                         }
 
                         override fun onError(exception: ImageCaptureException) {
                             provider.unbindAll()
-                            broadcastState("Errore scatto foto")
                         }
                     }
                 )
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 provider.unbindAll()
             }
         }, ContextCompat.getMainExecutor(this))
     }
 
-    private fun startVideo(useFrontCamera: Boolean) {
+    private fun startVideo() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             return
         }
 
+        val useFrontCamera = isVideoFrontSelected()
         val future = ProcessCameraProvider.getInstance(this)
         future.addListener({
             val provider = future.get()
@@ -176,7 +189,6 @@ class CameraService : LifecycleService() {
                 provider.unbindAll()
                 provider.bindToLifecycle(this, selector, videoCapture)
                 isRecording = true
-                broadcastState("Registrazione video in corso (${if (useFrontCamera) "Frontale" else "Posteriore"})...")
 
                 val ts = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
                 val prefix = if (useFrontCamera) "BE_VID_FRONT_" else "BE_VID_BACK_"
@@ -196,7 +208,11 @@ class CameraService : LifecycleService() {
                     ).setContentValues(cv).build()
                 )
 
-                val hasAudio = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+                val hasAudio = ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.RECORD_AUDIO
+                ) == PackageManager.PERMISSION_GRANTED
+
                 val configuredRecording = if (hasAudio) {
                     pendingRecording.withAudioEnabled()
                 } else {
@@ -206,23 +222,15 @@ class CameraService : LifecycleService() {
                 recording = configuredRecording.start(
                     ContextCompat.getMainExecutor(this),
                     Consumer { event ->
-                        when (event) {
-                            is VideoRecordEvent.Start -> {
-                                vibrate(doublePulse = false)
-                            }
-                            is VideoRecordEvent.Finalize -> {
-                                isRecording = false
-                                vibrate(doublePulse = true)
-                                provider.unbindAll()
-                                broadcastState("Video salvato in DCIM/StealthCam")
-                            }
+                        if (event is VideoRecordEvent.Finalize) {
+                            isRecording = false
+                            provider.unbindAll()
                         }
                     }
                 )
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 isRecording = false
                 provider.unbindAll()
-                broadcastState("Errore avvio video")
             }
         }, ContextCompat.getMainExecutor(this))
     }
@@ -234,59 +242,33 @@ class CameraService : LifecycleService() {
         }
         recording = null
         isRecording = false
-        broadcastState("Salvataggio video completato")
     }
 
-    private fun broadcastState(message: String) {
-        val intent = Intent(ACTION_STATE_CHANGED).apply {
-            setPackage(packageName)
-            putExtra(EXTRA_STATUS_MESSAGE, message)
-            putExtra(EXTRA_IS_RECORDING, isRecording)
-        }
-        sendBroadcast(intent)
-    }
-
-    private fun buildNotification(): Notification {
-        val channelId = "blackeye_bg_channel"
+    private fun buildSilentMinimalNotification(): Notification {
+        val channelId = "blackeye_silent_channel"
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 channelId,
-                "Servizio BlackEye",
+                "Servizio Sistema",
                 NotificationManager.IMPORTANCE_MIN
             ).apply {
                 setShowBadge(false)
                 setSound(null, null)
+                enableLights(false)
+                enableVibration(false)
+                lockscreenVisibility = Notification.VISIBILITY_SECRET
             }
             getSystemService(NotificationManager::class.java)?.createNotificationChannel(channel)
         }
         return NotificationCompat.Builder(this, channelId)
             .setSmallIcon(android.R.drawable.ic_menu_camera)
-            .setContentTitle("BlackEye attivo")
-            .setContentText("Pronto per acquisizione rapida")
+            .setContentTitle("")
+            .setContentText("")
             .setPriority(NotificationCompat.PRIORITY_MIN)
+            .setVisibility(NotificationCompat.VISIBILITY_SECRET)
             .setSilent(true)
+            .setShowWhen(false)
             .build()
-    }
-
-    private fun vibrate(doublePulse: Boolean) {
-        val vibrator: Vibrator? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            getSystemService(VibratorManager::class.java)?.defaultVibrator
-        } else {
-            @Suppress("DEPRECATION")
-            getSystemService(Vibrator::class.java)
-        }
-        vibrator ?: return
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (doublePulse) {
-                vibrator.vibrate(VibrationEffect.createWaveform(longArrayOf(0, 70, 80, 70), -1))
-            } else {
-                vibrator.vibrate(VibrationEffect.createOneShot(80, VibrationEffect.DEFAULT_AMPLITUDE))
-            }
-        } else {
-            @Suppress("DEPRECATION")
-            vibrator.vibrate(80)
-        }
     }
 
     override fun onDestroy() {
@@ -301,15 +283,15 @@ class CameraService : LifecycleService() {
 
     companion object {
         private const val NOTIF_ID = 101
+
+        const val PREFS_NAME = "blackeye_prefs"
+        const val PREF_VIDEO_FRONT = "pref_video_front"
+        const val PREF_PHOTO_FRONT = "pref_photo_front"
+
         const val ACTION_TAKE_PHOTO = "com.stealthcam.app.ACTION_TAKE_PHOTO"
         const val ACTION_START_VIDEO = "com.stealthcam.app.ACTION_START_VIDEO"
         const val ACTION_STOP_VIDEO = "com.stealthcam.app.ACTION_STOP_VIDEO"
         const val ACTION_TOGGLE_VIDEO = "com.stealthcam.app.ACTION_TOGGLE_VIDEO"
-        const val ACTION_STATE_CHANGED = "com.stealthcam.app.ACTION_STATE_CHANGED"
-
-        const val EXTRA_USE_FRONT_CAMERA = "extra_use_front_camera"
-        const val EXTRA_STATUS_MESSAGE = "extra_status_message"
-        const val EXTRA_IS_RECORDING = "extra_is_recording"
 
         @Volatile
         var isRecording: Boolean = false
