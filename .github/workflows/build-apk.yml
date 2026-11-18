@@ -16,9 +16,6 @@ jobs:
       - name: Individua cartella progetto
         id: detect
         run: |
-          echo "File presenti nel repository:"
-          find . -maxdepth 4 -not -path '*/.*'
-
           SETTINGS_PATH=$(find . -maxdepth 4 \( -name "settings.gradle" -o -name "settings.gradle.kts" \) | head -n 1)
           if [ -n "$SETTINGS_PATH" ]; then
             PROJECT_DIR=$(dirname "$SETTINGS_PATH")
@@ -36,7 +33,7 @@ jobs:
             exit 0
           fi
 
-          echo "ERRORE: Nessun progetto Android (settings.gradle o app/build.gradle) trovato nel repository."
+          echo "ERRORE: Nessun progetto Android trovato."
           exit 1
 
       - name: Configura JDK 17
@@ -55,14 +52,15 @@ jobs:
           yes | /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses || true
           /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager "platforms;android-34" "build-tools;34.0.0"
 
-      - name: Prepara Gradle Wrapper e file base
+      - name: Prepara Gradle Wrapper e converte fine riga Unix
         working-directory: ${{ steps.detect.outputs.dir }}
         run: |
           mkdir -p gradle/wrapper
           curl -fL "https://github.com/gradle/gradle/raw/v8.6.0/gradle/wrapper/gradle-wrapper.jar" -o gradle/wrapper/gradle-wrapper.jar
-          if [ ! -f "gradlew" ]; then
+          if [ ! -s "gradlew" ]; then
             curl -fLo gradlew "https://raw.githubusercontent.com/gradle/gradle/v8.6.0/gradlew"
           fi
+          sed -i 's/\r$//' gradlew
           chmod +x gradlew
 
           if [ ! -f "gradle/wrapper/gradle-wrapper.properties" ]; then
@@ -74,6 +72,8 @@ jobs:
           zipStoreBase=GRADLE_USER_HOME
           zipStorePath=wrapper/dists
           EOF
+          else
+            sed -i 's/\r$//' gradle/wrapper/gradle-wrapper.properties
           fi
 
           if [ ! -f "gradle.properties" ]; then
@@ -82,36 +82,6 @@ jobs:
           android.useAndroidX=true
           kotlin.code.style=official
           android.nonTransitiveRClass=true
-          EOF
-          fi
-
-          if [ ! -f "settings.gradle" ] && [ ! -f "settings.gradle.kts" ]; then
-            cat << 'EOF' > settings.gradle
-          pluginManagement {
-              repositories {
-                  google()
-                  mavenCentral()
-                  gradlePluginPortal()
-              }
-          }
-          dependencyResolutionManagement {
-              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-              repositories {
-                  google()
-                  mavenCentral()
-              }
-          }
-          rootProject.name = "StealthCam"
-          include ':app'
-          EOF
-          fi
-
-          if [ ! -f "build.gradle" ] && [ ! -f "build.gradle.kts" ]; then
-            cat << 'EOF' > build.gradle
-          plugins {
-              id 'com.android.application' version '8.4.0' apply false
-              id 'org.jetbrains.kotlin.android' version '1.9.24' apply false
-          }
           EOF
           fi
 
